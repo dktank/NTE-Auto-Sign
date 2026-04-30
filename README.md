@@ -84,6 +84,48 @@ python nte.py
 本项目由 skyland-auto-sign 开源项目修改完成：  
 https://gitee.com/FancyCabbage/skyland-auto-sign
 
+## GitHub Actions 自动签到
+
+支持 GitHub Actions 定时自动签到。
+
+### 配置步骤
+
+1. **Fork 本仓库** 到你的 GitHub 账号
+
+2. **添加 Secrets**
+   - 进入你 Fork 的仓库 → Settings → Secrets and variables → Actions
+   - 点击 `New repository secret`
+   - Name: `TOKEN`
+   - Value: 账号信息，支持两种格式：
+     - 单账号：`{"refreshToken":"xxx","uid":"10xxxx","deviceId":"xxxxx","gameId":"1289","roleIds":["2160xxxxxxx"]}`
+     - 多账号：每行一个 JSON，用换行分隔
+
+3. **启用 Actions**
+   - 进入 Actions 标签页
+   - 点击 `I understand my workflows, go ahead and enable them`
+   - 选择 `Auto Sign` workflow
+
+4. **手动测试**
+   - 在 Actions 页面选择 `Auto Sign`
+   - 点击 `Run workflow` → `Run workflow`
+   - 查看运行日志确认签到成功
+
+### 定时执行
+
+默认每 6 小时执行一次（UTC 0:42, 6:42, 12:42, 18:42，即北京时间 8:42, 14:42, 20:42, 2:42）。
+
+可在 `.github/workflows/sign.yml` 中修改 cron 表达式：
+```yaml
+schedule:
+  - cron: '42 */6 * * *'  # 分 时 日 月 周
+```
+
+### Secrets 说明
+
+| Secret | 必填 | 说明 |
+|--------|------|------|
+| `TOKEN` | 是 | 账号信息，JSON 格式，多账号用换行分隔 |
+
 ## 演示图片
 
 ![演示图 1](assets/1.png)
