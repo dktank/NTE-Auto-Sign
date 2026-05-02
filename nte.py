@@ -370,7 +370,13 @@ def _env_items():
 
 def read_from_env():
     accounts = []
-    for row in _env_items():
+    # DEBUG: 输出原始 TOKEN 环境变量值
+    print(f'[DEBUG] TOKEN 环境变量原始值: {repr(token_env)}')
+    rows = _env_items()
+    print(f'[DEBUG] 解析后的行数: {len(rows)}')
+    for i, row in enumerate(rows):
+        print(f'[DEBUG] 第 {i+1} 行: {repr(row)}')
+    for row in rows:
         account = parse_account_line(row)
         if account:
             accounts.append(account)
