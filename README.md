@@ -86,26 +86,35 @@ https://gitee.com/FancyCabbage/skyland-auto-sign
 
 ## GitHub Actions 自动签到
 
-支持 GitHub Actions 定时自动签到。
+支持 GitHub Actions 定时自动签到，**支持 Token 自动更新**，无需手动维护。
 
 ### 配置步骤
 
 1. **Fork 本仓库** 到你的 GitHub 账号
 
-2. **添加 Secrets**
-   - 进入你 Fork 的仓库 → Settings → Secrets and variables → Actions
-   - 点击 `New repository secret`
-   - Name: `TOKEN`
-   - Value: 账号信息，支持两种格式：
-     - 单账号：`{"refreshToken":"xxx","uid":"10xxxx","deviceId":"xxxxx","gameId":"1289","roleIds":["2160xxxxxxx"]}`
-     - 多账号：每行一个 JSON，用换行分隔
+2. **创建 Personal Access Token (PAT)**
+   - GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens**
+   - 点击 "Generate new token (fine-grained)"
+   - Token name: `update-secret`
+   - Repository access: **Only select repositories** → 选择 `NTE-Auto-Sign`
+   - Permissions → Repository permissions → Secrets: **Read and write**
+   - 点击 "Generate token" 并复制
 
-3. **启用 Actions**
+3. **添加 Secrets**
+   - 进入你 Fork 的仓库 → Settings → Secrets and variables → Actions
+   - 点击 `New repository secret`，添加以下两个：
+   
+   | Secret 名称 | 值 |
+   |------------|-----|
+   | `TOKEN` | 账号信息 JSON，格式：`{"refreshToken":"xxx","uid":"10xxxx","deviceId":"xxxxx","gameId":"1289","roleIds":["2160xxxxxxx"]}` |
+   | `GH_TOKEN` | 上一步创建的 Personal Access Token |
+
+4. **启用 Actions**
    - 进入 Actions 标签页
    - 点击 `I understand my workflows, go ahead and enable them`
    - 选择 `Auto Sign` workflow
 
-4. **手动测试**
+5. **手动测试**
    - 在 Actions 页面选择 `Auto Sign`
    - 点击 `Run workflow` → `Run workflow`
    - 查看运行日志确认签到成功
@@ -125,6 +134,15 @@ schedule:
 | Secret | 必填 | 说明 |
 |--------|------|------|
 | `TOKEN` | 是 | 账号信息，JSON 格式，多账号用换行分隔 |
+| `GH_TOKEN` | 是 | Personal Access Token，用于自动更新 TOKEN |
+
+### Token 自动更新机制
+
+每次签到成功后，`refreshToken` 会自动刷新。本项目会自动将新 token 更新到 GitHub Secrets，实现长期无人值守运行。
+
+**注意事项：**
+- 配置完成后，**不要在本地运行签到**，否则会导致 Actions 的 token 失效
+- 如果本地运行了签到，需要将本地 `TOKEN.txt` 的最新内容更新到 GitHub Secrets
 
 ## 演示图片
 

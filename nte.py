@@ -370,20 +370,7 @@ def _env_items():
 
 def read_from_env():
     accounts = []
-    # DEBUG: 输出环境变量信息（不暴露完整值）
-    print(f'[DEBUG] TOKEN 环境变量长度: {len(token_env) if token_env else 0}')
-    rows = _env_items()
-    for i, row in enumerate(rows):
-        print(f'[DEBUG] 第 {i+1} 行长度: {len(row)}')
-        # 尝试解析并输出关键字段长度
-        try:
-            import json
-            data = json.loads(row)
-            rt = data.get('refreshToken', '')
-            print(f'[DEBUG] refreshToken 长度: {len(rt)}, 前10字符: {rt[:10] if rt else "空"}')
-        except:
-            print(f'[DEBUG] 第 {i+1} 行不是有效 JSON')
-    for row in rows:
+    for row in _env_items():
         account = parse_account_line(row)
         if account:
             accounts.append(account)
@@ -505,10 +492,6 @@ def user_center_login(token, user_id, device_id):
 
 
 def refresh_access_token(account):
-    # DEBUG: 输出关键信息
-    print(f'[DEBUG] 刷新token请求 - deviceId长度: {len(account.get("deviceId") or "")}')
-    print(f'[DEBUG] 刷新token请求 - refreshToken长度: {len(account.get("refreshToken") or "")}')
-    print(f'[DEBUG] 刷新token请求 - refreshToken前10字符: {(account.get("refreshToken") or "")[:10]}')
     headers = {
         **REQUEST_HEADERS_BASE,
         'deviceid': account['deviceId'],
@@ -518,7 +501,6 @@ def refresh_access_token(account):
         'User-Agent': OKHTTP_UA,
     }
     response = requests.post(REFRESH_TOKEN_URL, headers=headers)
-    print(f'[DEBUG] 刷新token响应状态码: {response.status_code}')
     if response.status_code == 402:
         raise Exception('refreshToken 已失效，请重新登录')
     resp = _safe_json(response, '刷新token')
