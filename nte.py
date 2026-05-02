@@ -828,13 +828,13 @@ def start():
     if accounts:
         if not token_env:
             save(accounts)
-        else:
-            # 环境变量模式下，输出新 token 到文件供 workflow 更新 secrets
+        elif success:
+            # 只有签到成功才写入新 token（失败时 account 的 token 未更新）
             import json
             new_tokens = [json.dumps(acc, ensure_ascii=False) for acc in accounts]
             with open('new_token.txt', 'w', encoding='utf-8') as f:
                 f.write('\n'.join(new_tokens))
-            print('[INFO] 新 token 已写入 new_token.txt，请更新 Secrets')
+            print('[INFO] 新 token 已写入 new_token.txt')
     print('签到完成！')
     return success
 
