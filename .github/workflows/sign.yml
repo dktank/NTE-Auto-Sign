@@ -28,3 +28,19 @@ jobs:
           TOKEN: ${{ secrets.TOKEN }}
           EXIT_WHEN_FAIL: on
         run: python nte.py
+
+      - name: Update TOKEN secret
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [ -f new_token.txt ]; then
+            NEW_TOKEN=$(cat new_token.txt)
+            if [ -n "$NEW_TOKEN" ]; then
+              echo "Updating TOKEN secret..."
+              gh secret set TOKEN --body "$NEW_TOKEN"
+              echo "TOKEN secret updated successfully!"
+            fi
+          else
+            echo "No new token file found, skipping secret update"
+          fi

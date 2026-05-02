@@ -1,0 +1,6 @@
+TOKEN.txt
+__pycache__/
+*.pyc
+logs/
+venv/
+new_token.txt

@@ -370,13 +370,7 @@ def _env_items():
 
 def read_from_env():
     accounts = []
-    # DEBUG: 输出原始 TOKEN 环境变量值
-    print(f'[DEBUG] TOKEN 环境变量原始值: {repr(token_env)}')
-    rows = _env_items()
-    print(f'[DEBUG] 解析后的行数: {len(rows)}')
-    for i, row in enumerate(rows):
-        print(f'[DEBUG] 第 {i+1} 行: {repr(row)}')
-    for row in rows:
+    for row in _env_items():
         account = parse_account_line(row)
         if account:
             accounts.append(account)
@@ -831,8 +825,16 @@ def start():
             logging.error('', exc_info=ex)
             success = False
 
-    if accounts and not token_env:
-        save(accounts)
+    if accounts:
+        if not token_env:
+            save(accounts)
+        else:
+            # 环境变量模式下，输出新 token 到文件供 workflow 更新 secrets
+            import json
+            new_tokens = [json.dumps(acc, ensure_ascii=False) for acc in accounts]
+            with open('new_token.txt', 'w', encoding='utf-8') as f:
+                f.write('\n'.join(new_tokens))
+            print('[INFO] 新 token 已写入 new_token.txt，请更新 Secrets')
     print('签到完成！')
     return success
 
